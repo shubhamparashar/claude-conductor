@@ -2,6 +2,10 @@
 
 All notable changes to claude-conductor. Newest first.
 
+## [0.8.0] - 2026-08-14
+
+- **handoff skill** (`/handoff`) - compact the live conversation into a handoff document for a successor agent (live state first, suggested skills, secrets redacted), always ending with a "Start the next session" block: fork-resume command, paste-ready fresh-session starter, and the exact model to continue on. Local spawn scripts are offered when present, never invented.
+
 ## [0.7.3] - 2026-07-29
 
 Doctor check-coverage fixes from the first cross-repo doctor sweep:
