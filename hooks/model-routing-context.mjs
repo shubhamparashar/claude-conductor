@@ -2,20 +2,25 @@
 // SessionStart hook: inject the model-routing escalation ladder so every
 // session (regardless of which model runs the main loop) delegates work at
 // the lowest capable tier and reserves the frontier model for orchestration.
-// If a project-agnostic rule file already covers this (~/.claude/rules/model-routing*.md),
+// If a project-agnostic rule file already covers this (model-routing*.md under
+// ~/.claude/rules, ~/.claude/rules-detail, or $CONDUCTOR_RULES_DIR - colon-separated),
 // print a one-line pointer instead of duplicating the full ladder every SessionStart.
 import { existsSync, readdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-const rulesDir = join(homedir(), '.claude', 'rules');
-let hasRule = false;
-try {
-    hasRule = existsSync(rulesDir) && readdirSync(rulesDir).some((f) => /^model-routing.*\.md$/.test(f));
-} catch {}
+const dirs = (process.env.CONDUCTOR_RULES_DIR || '').split(':').map((d) => d.trim()).filter(Boolean);
+dirs.push(join(homedir(), '.claude', 'rules'), join(homedir(), '.claude', 'rules-detail'));
+let ruleFile = null;
+for (const d of dirs) {
+    try {
+        const f = existsSync(d) && readdirSync(d).find((n) => /^model-routing.*\.md$/.test(n));
+        if (f) { ruleFile = join(d, f); break; }
+    } catch { /* unreadable dir: keep looking */ }
+}
 
-if (hasRule) {
-    console.log('<conductor-model-routing>Delegation ladder: see ~/.claude/rules/model-routing.md; journal at ~/.claude/routing-journal.md</conductor-model-routing>');
+if (ruleFile) {
+    console.log(`<conductor-model-routing>Delegation ladder: see ${ruleFile}; journal at ~/.claude/routing-journal.md</conductor-model-routing>`);
 } else {
     console.log(`<conductor-model-routing>
 Delegation ladder for spawned agents (Agent tool 'model:' / Workflow agent() opts.model + opts.effort). Pick the LOWEST tier that can do the task; escalate one tier on evidence of failure (junk/thin output -> retry once at next tier, then do it in the main loop):

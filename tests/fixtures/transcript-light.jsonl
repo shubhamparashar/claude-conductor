@@ -1,0 +1,2 @@
+{"type":"user","message":{"content":"quick question"}}
+{"type":"assistant","message":{"content":[{"type":"tool_use","name":"Read"}]}}

@@ -1,13 +1,10 @@
 #!/usr/bin/env node
-// UserPromptSubmit hook: every Nth prompt, remind the agent to persist durable
-// knowledge instead of letting it die with the session (Hermes-style
-// agent-curated write-back). Per-session counter in the OS temp dir.
-// Configure cadence with CONDUCTOR_NUDGE_EVERY (default 12).
-import { readFileSync, unlinkSync, writeFileSync } from 'node:fs';
+// UserPromptSubmit hook: relays one-shot flags dropped by the Stop hooks
+// (post-task reflection, unchecked goal contract). Pure relay - no counters,
+// no per-prompt writes, silent unless a flag file exists.
+import { readFileSync, unlinkSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-
-const NUDGE_EVERY = parseInt(process.env.CONDUCTOR_NUDGE_EVERY || '12', 10);
 
 let sid = 'unknown';
 try {
@@ -15,14 +12,8 @@ try {
     sid = input.session_id || 'unknown';
 } catch {}
 
-const counterFile = join(tmpdir(), `conductor-memory-nudge-${sid}`);
-let n = 0;
-try { n = parseInt(readFileSync(counterFile, 'utf8'), 10) || 0; } catch {}
-n += 1;
-try { writeFileSync(counterFile, String(n)); } catch {}
-
 // Post-task reflection flag dropped by the Stop hook when the previous turn
-// used heavy tooling - fire once, immediately, independent of the cadence.
+// used heavy tooling - fire once, then clear the flag.
 const reflectFlag = join(tmpdir(), `conductor-reflect-${sid}`);
 let toolCount = null;
 try { toolCount = readFileSync(reflectFlag, 'utf8').trim(); unlinkSync(reflectFlag); } catch {}
@@ -43,21 +34,5 @@ if (contractInfo !== null) {
     const [path, unchecked] = contractInfo.split('|');
     console.log(
         `<system-reminder>Goal contract: ${unchecked} unchecked completion criteria remain in ${path}. Before declaring the task done, reopen the contract, paste real evidence against each box, and only check boxes the evidence actually supports. Report any criterion you can't check as NOT done.</system-reminder>`
-    );
-}
-
-if (n % NUDGE_EVERY === 0) {
-    const knowledgeDirs = (process.env.CONDUCTOR_KNOWLEDGE_DIRS || '')
-        .split(':')
-        .map((p) => p.trim())
-        .filter(Boolean);
-    const destinations = knowledgeDirs.length
-        ? `memory directory, knowledge base, the appropriate CLAUDE.md, or the configured knowledge bundle(s) (${knowledgeDirs.join(', ')})`
-        : 'memory directory, knowledge base, or the appropriate CLAUDE.md';
-    console.log(
-        '<system-reminder>Memory nudge: pause and check whether this session has produced durable knowledge not yet persisted - ' +
-        `a new fact, decision, fixed bug, or gotcha. If yes, write it to your persistent memory (${destinations}). ` +
-        'If the task used 5+ tool calls and taught a reusable procedure, consider drafting it as a skill; if an existing skill proved wrong or stale, patch it. ' +
-        'If nothing durable emerged, continue without comment.</system-reminder>'
     );
 }

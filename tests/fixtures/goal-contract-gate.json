@@ -1,0 +1,5 @@
+{
+    "session_id": "test-session-contract",
+    "cwd": "__PROJECT_DIR__",
+    "hook_event_name": "Stop"
+}

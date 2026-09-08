@@ -1,0 +1,8 @@
+{
+    "session_id": "test-session-context-pressure",
+    "cwd": "__PROJECT_DIR__",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Edit",
+    "tool_input": { "file_path": "__PROJECT_DIR__/some-file.ts", "old_string": "a", "new_string": "b" },
+    "transcript_path": "__FIXTURES_DIR__/transcript-light.jsonl"
+}

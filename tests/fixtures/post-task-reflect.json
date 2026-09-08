@@ -1,0 +1,6 @@
+{
+    "session_id": "test-session-reflect",
+    "cwd": "__PROJECT_DIR__",
+    "hook_event_name": "Stop",
+    "transcript_path": "__FIXTURES_DIR__/transcript-heavy.jsonl"
+}

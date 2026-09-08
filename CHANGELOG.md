@@ -2,6 +2,29 @@
 
 All notable changes to claude-conductor. Newest first.
 
+## [0.9.0] - 2026-09-08
+- post-task-reflect: a missing transcript_path exits 0 instead of crashing on the stream error event.
+- conductor-doctor: hook-refs ignores quoted arguments (osascript -e, bash -c); gh mirroring capped at 3 calls per run so the hook stays inside its timeout.
+- model-routing-context: pointer names the rule file that actually matched.
+- Fixture-driven `node --test tests/` for every hook plus release-check, and a GitHub Actions workflow.
+
+Doctor coverage over the surrounding setup, plus three per-session cost fixes:
+
+- **model-routing-context also accepts `~/.claude/rules-detail/model-routing*.md` and `$CONDUCTOR_RULES_DIR`** - previously only `~/.claude/rules`, so a rules-detail layout got the full 1584-byte ladder injected into every session instead of a 176-byte pointer.
+- **memory-nudge is a pure flag relay** - the per-prompt counter write and the every-12th-prompt cadence branch are gone (the counter left one temp file per session; the cadence duplicated the post-task-reflect flag it already relays). `CONDUCTOR_NUDGE_EVERY` no longer applies.
+- **conductor-doctor: double-install allow-list derived from hooks.json** - the hardcoded list covered 7 of the 10 shipped hooks, so a double registration of the newer three went unseen.
+- **conductor-doctor: `gh` calls capped at 2s** - an 8s timeout inside a 5s hook budget could never complete; GitHub mirroring stays best-effort.
+- **delegation-journal: the `.delegation-journal-seen` dedup file is capped at 14 days**, the same cap the PENDING file already had (it had grown to 36 KB of never-pruned filenames).
+- **New doctor checks** (hook timeout raised to 10s; anything that shells out is a best-effort 2s `execFileSync`):
+    - `hook-refs` - hook commands in `~/.claude/settings*.json` and `$CLAUDE_PROJECT_DIR/.claude/settings*.json` must resolve (`$CLAUDE_PROJECT_DIR`, `${CLAUDE_PROJECT_DIR:-.}`, `${CLAUDE_PLUGIN_ROOT}` expanded) to an absolute path that exists.
+    - `off-skill-hook` - a hook script that still invokes a skill set to `"off"` in `skillOverrides`.
+    - `boundary-allowlist` - PR create/merge, message posts, issue creation and thread replies pre-approved in `permissions.allow` instead of `ask`.
+    - `launchd-health` - KeepAlive jobs whose last exit was non-zero (restart loop), plus any StandardOut/ErrorPath log over 5 MB still being written in the last 10 minutes.
+    - `claudemd-dup-skill` - a SKILL.md whose lines are >30% inlined into an always-loaded CLAUDE.md, reported with the percentage.
+    - `plugin-cache-stale` - the newest `~/.claude/plugins/cache/<marketplace>/<plugin>/` version vs the local clone's `plugin.json` (`CONDUCTOR_REPO_DIR`); skipped silently with no local clone.
+- **README check list updated** - it also omitted `automation-logs`.
+- **`.DS_Store` ignored and untracked.**
+
 ## [0.8.0] - 2026-08-14
 
 - **handoff skill** (`/handoff`) - compact the live conversation into a handoff document for a successor agent (live state first, suggested skills, secrets redacted), always ending with a "Start the next session" block: fork-resume command, paste-ready fresh-session starter, and the exact model to continue on. Local spawn scripts are offered when present, never invented.

@@ -1,0 +1,7 @@
+{
+    "session_id": "test-session-delegation",
+    "cwd": "__PROJECT_DIR__",
+    "hook_event_name": "SubagentStop",
+    "transcript_path": "__FIXTURES_DIR__/session-with-subagents/session.jsonl",
+    "ts": "2026-01-01T00:00:00Z"
+}

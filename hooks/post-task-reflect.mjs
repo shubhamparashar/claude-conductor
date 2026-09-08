@@ -24,7 +24,9 @@ const isRealUserMsg = (e) => {
 };
 
 let count = 0;
-const rl = readline.createInterface({ input: createReadStream(transcript) });
+const stream = createReadStream(transcript);
+stream.on('error', () => process.exit(0));
+const rl = readline.createInterface({ input: stream });
 rl.on('line', (line) => {
     let e;
     try { e = JSON.parse(line); } catch { return; }

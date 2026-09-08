@@ -19,11 +19,24 @@ try {
     );
     if (!existsSync(dir)) process.exit(0);
 
-    const seen = new Set(existsSync(SEEN) ? readFileSync(SEEN, 'utf8').split('\n') : []);
+    // SEEN rows are "<name>\t<YYYY-MM-DD>"; legacy undated rows get stamped on
+    // first rewrite. Same 14-day cap as PENDING so the dedup set can't grow
+    // unbounded - a transcript older than that is never re-scanned anyway.
+    const seenCutoff = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const stamp = new Date().toISOString().slice(0, 10);
+    const seen = new Map();
+    if (existsSync(SEEN)) {
+        for (const line of readFileSync(SEEN, 'utf8').split('\n')) {
+            if (!line) continue;
+            const [name, seenDate] = line.split('\t');
+            const d = seenDate || stamp;
+            if (d >= seenCutoff) seen.set(name, d);
+        }
+    }
     const rows = [];
     for (const f of readdirSync(dir)) {
         if (!f.endsWith('.meta.json') || seen.has(f)) continue;
-        seen.add(f);
+        seen.set(f, stamp);
         let meta = {};
         try { meta = JSON.parse(readFileSync(join(dir, f), 'utf8')); } catch {}
         const jsonl = join(dir, f.replace('.meta.json', '.jsonl'));
@@ -69,6 +82,6 @@ try {
             });
         }
         writeFileSync(PENDING, header + [...keptRows, ...rows].join('\n') + '\n');
-        writeFileSync(SEEN, [...seen].join('\n'));
+        writeFileSync(SEEN, [...seen].map(([n, d]) => `${n}\t${d}`).join('\n') + '\n');
     }
 } catch {}
