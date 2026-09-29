@@ -16,7 +16,7 @@ sed -e "s|__HOME__|$HOME|g" -e "s|__NODE_BIN__|$(dirname "$(command -v node)")|g
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.$(whoami).skill-harvest.plist
 ```
 
-Optional env (set in the plist `EnvironmentVariables` or edit the script): `CONDUCTOR_HARVEST_MODEL` (default `claude-sonnet-4-6` - a worker model on purpose; harvesting is mechanical skimming), `CONDUCTOR_CLAUDE_BIN` (default: `claude` on PATH).
+Optional env (set in the plist `EnvironmentVariables` or edit the script): `CONDUCTOR_HARVEST_MODEL` (default `claude-sonnet-5-5` - a worker model on purpose; harvesting is mechanical skimming), `CONDUCTOR_CLAUDE_BIN` (default: `claude` on PATH).
 
 On Linux, run the same script from cron: `45 9 * * * bash ~/.claude/automation/skill-harvest.sh`.
 

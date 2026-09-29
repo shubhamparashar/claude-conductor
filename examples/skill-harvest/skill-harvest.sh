@@ -7,13 +7,13 @@
 # implicate an existing skill into patch proposals under skills-drafts/patches/.
 #
 # Config (env or edit here):
-#   CONDUCTOR_HARVEST_MODEL - worker model (default: claude-sonnet-4-6)
+#   CONDUCTOR_HARVEST_MODEL - worker model (default: claude-sonnet-5-5)
 #   CONDUCTOR_CLAUDE_BIN    - claude binary (default: first `claude` on PATH)
 set -u
 
 DRAFTS="$HOME/.claude/skills-drafts"
 LOGDIR="$HOME/.claude/automation/logs"
-MODEL="${CONDUCTOR_HARVEST_MODEL:-claude-sonnet-4-6}"
+MODEL="${CONDUCTOR_HARVEST_MODEL:-claude-sonnet-5-5}"
 CLAUDE_BIN="${CONDUCTOR_CLAUDE_BIN:-$(command -v claude || echo "$HOME/.claude/local/claude")}"
 mkdir -p "$DRAFTS/patches" "$LOGDIR"
 LOG="$LOGDIR/skill-harvest-$(date +%Y-%m-%d).log"

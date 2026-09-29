@@ -22,10 +22,14 @@ PROJECTS = Path.home() / '.claude' / 'projects'
 PRICES = {
     'haiku': (1.00, 5.00, 0.10, 1.25),
     'sonnet': (3.00, 15.00, 0.30, 3.75),
+    'sonnet-5': (2.00, 10.00, 0.20, 2.50),
     'opus': (5.00, 25.00, 0.50, 6.25),
     'opus-4-1': (15.00, 75.00, 1.50, 18.75),
+    'opus-5-5': (4.00, 20.00, 0.20, 5.00),
     'fable': (10.00, 50.00, 1.00, 12.50),
+    'fable-5-1': (10.00, 50.00, 0.25, 12.50),
     'mythos': (10.00, 50.00, 1.00, 12.50),
+    'mythos-5-1': (10.00, 50.00, 0.25, 12.50),
 }
 USAGE_RE = re.compile(r'"model":"([^"]+)".*?"usage":\{([^}]*)')
 FIELD_RE = re.compile(r'"(input_tokens|output_tokens|cache_read_input_tokens|cache_creation_input_tokens)":(\d+)')

@@ -15,12 +15,12 @@ Route by TIER, then map the tier to whatever vendor(s) your harness can actually
 |------|------|-----------|--------|-----|----------------|
 | SMALL | search, fetch/extract, mechanical transforms, sweeps | haiku | gpt-*-mini/nano | grok-mini | any cheap instruct model |
 | MID | verify/judge, scoping, per-source analysis, routine code | sonnet | gpt (standard) | grok | mid-tier model |
-| LARGE | hard self-contained work: complex debugging, multi-file code, high-stakes judging | opus (effort high) | frontier + high reasoning | grok (max reasoning) | frontier model |
+| LARGE | hard self-contained work: complex debugging, multi-file code, high-stakes judging | opus (effort high); fable above it only when the main loop is not Fable (unproven until the journal has rows for it in that role) | frontier + high reasoning | grok (max reasoning) | frontier model |
 | MAIN LOOP | orchestration, final synthesis, strategy — never delegated | whatever runs the session | ″ | ″ | ″ |
 
 Journal rows record the CONCRETE model (`vendor:model(effort)`, e.g. `anthropic:haiku`, `openai:gpt-x-mini`) so evidence transfers when you switch vendors: tier history is suggestive across vendors, exact-model history is authoritative.
 
-**Harness honesty:** inside Claude Code, the Agent/Workflow `model:` parameter spawns Anthropic models only — cross-vendor delegation needs an external path (an OpenRouter/LiteLLM-backed MCP tool or CLI the orchestrator shells out to). The skill and journal are portable to any harness (an OpenAI- or xAI-based agent runner can adopt both verbatim); what varies is which column of the tier table is executable.
+**Harness honesty:** inside Claude Code, the Agent/Workflow `model:` parameter spawns Anthropic models only (`haiku`, `sonnet`, `opus`, `fable`, or a full id; on the Anthropic API `sonnet` = Sonnet 5.5, `opus` = Opus 5.5, `fable` = Fable 5.1) — cross-vendor delegation needs an external path (an OpenRouter/LiteLLM-backed MCP tool or CLI the orchestrator shells out to). The skill and journal are portable to any harness (an OpenAI- or xAI-based agent runner can adopt both verbatim); what varies is which column of the tier table is executable.
 
 ## The journal
 

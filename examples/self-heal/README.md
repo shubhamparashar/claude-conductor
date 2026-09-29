@@ -12,7 +12,7 @@ sed -e "s|__HOME__|$HOME|g" -e "s|__NODE_BIN__|$(dirname "$(command -v node)")|g
 launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.$(whoami).conductor-self-heal.plist
 ```
 
-Optional env (set in the plist `EnvironmentVariables` or edit the script): `CONDUCTOR_REPO_DIR` (plugin checkout), `CONDUCTOR_ISSUE_REPO` (`owner/repo` for issue comments), `CONDUCTOR_HEAL_MODEL` (default `claude-sonnet-4-6` — a worker model on purpose; the fixes are mechanical).
+Optional env (set in the plist `EnvironmentVariables` or edit the script): `CONDUCTOR_REPO_DIR` (plugin checkout), `CONDUCTOR_ISSUE_REPO` (`owner/repo` for issue comments), `CONDUCTOR_HEAL_MODEL` (default `claude-sonnet-5-5` — a worker model on purpose; the fixes are mechanical).
 
 On Linux, run the same script from cron: `15 10 * * * bash ~/.claude/automation/self-heal.sh`.
 
