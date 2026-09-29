@@ -5,7 +5,7 @@ description: Aggregate the local delegation routing journal into an ANONYMIZED w
 
 # Metrics Share (anonymous, consent-gated, weekly)
 
-Purpose: collect delegation outcomes from different setups so tier defaults (e.g. Sonnet 4.6 vs Sonnet 5 vs Haiku per task-kind) are chosen from internal data, not vibes. **No task content, no paths, no project names ever leave the machine.**
+Purpose: collect delegation outcomes from different setups so tier defaults (e.g. Sonnet 5 vs Sonnet 5.5 vs Haiku per task-kind) are chosen from internal data, not vibes. **No task content, no paths, no project names ever leave the machine.**
 
 ## What gets shared (and nothing else)
 

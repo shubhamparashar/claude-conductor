@@ -2,6 +2,11 @@
 
 All notable changes to claude-conductor. Newest first.
 
+## [0.9.1] - 2026-09-30
+- cost-stats: rates for the current lineup from platform.claude.com pricing. `claude-opus-5-5` was priced as generic opus ($5/$25, official $4/$20), `claude-sonnet-5-5` and `claude-sonnet-5` as generic sonnet ($3/$15, official $2/$10), and Fable 5.1 / Mythos 5.1 cache hits at $1 (official $0.25). New keys win by the existing longest-match rule.
+- model-routing-context and model-router: the ladder names what the aliases resolve to on the Anthropic API (sonnet = Sonnet 5.5, opus = Opus 5.5, fable = Fable 5.1) and adds fable as an escalation above opus-high when the main loop is not Fable, marked unproven until the routing journal has rows for it in that role.
+- self-heal and skill-harvest examples default to `claude-sonnet-5-5`.
+
 ## [0.9.0] - 2026-09-08
 - post-task-reflect: a missing transcript_path exits 0 instead of crashing on the stream error event.
 - conductor-doctor: hook-refs ignores quoted arguments (osascript -e, bash -c); gh mirroring capped at 3 calls per run so the hook stays inside its timeout.

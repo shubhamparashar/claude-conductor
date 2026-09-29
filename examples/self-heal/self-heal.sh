@@ -8,13 +8,13 @@
 # Config (env or edit here):
 #   CONDUCTOR_REPO_DIR   — plugin checkout to run checks from (default: ~/repo/claude-conductor)
 #   CONDUCTOR_ISSUE_REPO — owner/repo for gh issue comments (optional)
-#   CONDUCTOR_HEAL_MODEL — worker model (default: claude-sonnet-4-6)
+#   CONDUCTOR_HEAL_MODEL — worker model (default: claude-sonnet-5-5)
 set -u
 
 REPORT="$HOME/.claude/conductor-report.md"
 REPO_DIR="${CONDUCTOR_REPO_DIR:-$HOME/repo/claude-conductor}"
 ISSUE_REPO="${CONDUCTOR_ISSUE_REPO:-}"
-MODEL="${CONDUCTOR_HEAL_MODEL:-claude-sonnet-4-6}"
+MODEL="${CONDUCTOR_HEAL_MODEL:-claude-sonnet-5-5}"
 LOGDIR="$HOME/.claude/automation/logs"
 mkdir -p "$LOGDIR"
 LOG="$LOGDIR/self-heal-$(date +%Y-%m-%d).log"

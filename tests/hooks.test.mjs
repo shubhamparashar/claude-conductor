@@ -101,6 +101,7 @@ test('model-routing-context.mjs: emits the long ladder when no rules dir exists'
     const result = runHook(join(HOOKS_DIR, 'model-routing-context.mjs'), payload, { home, projectDir });
     assert.equal(result.status, 0);
     assert.match(result.stdout, /Delegation ladder for spawned agents/);
+    assert.match(result.stdout, /- fable .*Unproven until/);
 });
 
 test('model-routing-context.mjs: emits a short pointer (<300 bytes) when model-routing.md exists', () => {
