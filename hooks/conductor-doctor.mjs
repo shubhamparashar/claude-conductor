@@ -335,24 +335,24 @@ check('claudemd-dup-skill', () => {
 }, () => `a skill body is duplicated into an always-loaded CLAUDE.md: ${dupSkills.slice(0, 5).join('; ')}` +
     ' - keep the skill and leave a one-line pointer in CLAUDE.md, or delete the skill');
 
-// 13. installed plugin cache is behind the local clone: the session is running
-// an older copy than the repo being edited.
+// 13. installed plugin is behind the local clone: the session is running an
+// older copy than the repo being edited. Cache dir mtimes can't say which
+// version is live - Claude Code writes .orphaned_at into dropped version dirs.
 let cacheStale = '';
 check('plugin-cache-stale', () => {
     const repo = process.env.CONDUCTOR_REPO_DIR || '/Users/shubhamparashar/repo/claude-conductor';
     const manifest = join(repo, '.claude-plugin', 'plugin.json');
     if (!existsSync(manifest)) return true;
     const { name, version } = JSON.parse(readFileSync(manifest, 'utf8'));
-    const cacheRoot = join(homedir(), '.claude', 'plugins', 'cache');
-    if (!name || !version || !existsSync(cacheRoot)) return true;
-    for (const market of readdirSync(cacheRoot)) {
-        const dir = join(cacheRoot, market, name);
-        if (!existsSync(dir)) continue;
-        const newest = readdirSync(dir)
-            .map(v => ({ v, m: statSync(join(dir, v)).mtimeMs }))
-            .sort((a, b) => b.m - a.m)[0];
-        if (newest && newest.v !== version) cacheStale = `${market}/${name} cache is ${newest.v}, local clone is ${version}`;
-    }
+    const installed = join(homedir(), '.claude', 'plugins', 'installed_plugins.json');
+    if (!name || !version || !existsSync(installed)) return true;
+    try {
+        for (const [key, installs] of Object.entries(JSON.parse(readFileSync(installed, 'utf8')).plugins || {})) {
+            if (!key.startsWith(`${name}@`)) continue;
+            const live = installs.find(i => i.scope === 'user')?.version;
+            if (live && live !== version) cacheStale = `${key} user-scope install is ${live}, local clone is ${version}`;
+        }
+    } catch { return true; }
     return !cacheStale;
 }, () => `${cacheStale} - run \`claude plugin marketplace update\` (then reinstall) so sessions load the current version`);
 
