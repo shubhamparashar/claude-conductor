@@ -282,10 +282,11 @@ check('launchd-health', () => {
     } catch {}
     const plistText = (f) => { try { return readFileSync(join(agents, f), 'utf8'); } catch { return ''; } };
     for (const line of listing.split('\n').slice(1)) {
-        const [, status, label] = line.split('\t');
+        const [pid, status, label] = line.split('\t');
         if (!label || !status || status === '0' || status === '-') continue;
+        if (pid && pid !== '-') continue; // currently running: last exit is stale history, not a live crash loop
         if (!plists.includes(`${label}.plist`)) continue;
-        if (/KeepAlive/.test(plistText(`${label}.plist`))) launchdBad.push(`${label} exit ${status} with KeepAlive`);
+        if (/<key>KeepAlive<\/key>\s*<true\s*\/>/.test(plistText(`${label}.plist`))) launchdBad.push(`${label} exit ${status} with KeepAlive`);
     }
     const tenMin = Date.now() - 10 * 60 * 1000;
     for (const f of plists) {
