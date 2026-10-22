@@ -1,30 +1,39 @@
 ---
 name: handoff
-description: Compact the current conversation into a handoff document for another agent to pick up, then suggest exactly how to start the successor session. Use when the user says "handoff", "write a handoff", "prep this for another session", or before ending a long session whose work continues elsewhere.
+description: Write a lean handoff brief for a new Claude session and, when asked, start the successor (natively in Claude Desktop, or via a ready-to-run command elsewhere). Use when the user says "handoff", "hand this off", "write a handoff", "continue in a new session", "prep this for another session", or before ending a long session whose work continues elsewhere.
 argument-hint: "What will the next session be used for?"
 ---
 
-Write a handoff document summarising the current conversation so a fresh agent can continue the work. Save it to the OS temporary directory - not the current workspace.
+## 1. Write the brief
 
-Rules for the document:
+Current models plan and explore well on their own. What they cannot recover is what only this session knows. Write that, in this order:
 
-- Include a **"suggested skills"** section naming the skills the successor should invoke, with one line each on when.
-- Do not duplicate content already captured in other artifacts (PRDs, plans, ADRs, issues, commits, diffs). Reference them by path or URL instead.
-- Redact sensitive information - API keys, passwords, tokens, PII.
-- Lead with live state: anything armed, running, or half-applied that the successor must know before touching the system.
-- If the user passed arguments, treat them as a description of what the next session will focus on and tailor the doc accordingly.
+- **Live state** - anything armed, running, or half-applied (background jobs, deploys, open PRs, uncommitted changes, branch and worktree path).
+- **Goal + done** - the outcome in one line and the checkable evidence that proves it.
+- **Decisions and why** - including approaches rejected, so the successor does not retry them.
+- **Gotchas found** - environment quirks, corrected assumptions, traps hit.
+- **Next step** - the single first action.
+- **Boundaries** - what needs the user's OK (push, merge, posting, prod writes) and what is out of scope.
 
-## Then suggest the successor session
+Reference, never copy, existing artifacts (PRDs, plans, issues, commits, diffs) by path or URL. Claims about prod/data carry evidence or say "unverified". Redact secrets, tokens, PII. If the user passed arguments, tailor the brief to that focus. Aim for under ~60 lines.
 
-After writing the document, always end with a **"Start the next session"** block containing, in order:
+Save to the session scratchpad or OS temp dir, never the workspace. If the user only asked for the brief, stop here: print the path and offer the start in one line.
 
-1. **Continue-in-place command** - resume this session with its context forked:
-   ```
-   claude --resume <this session id> --fork-session
-   ```
-   The session id is printed by the SessionStart hook (`session-id: <uuid>`); if absent, say so instead of guessing.
-2. **Fresh-session starter** - a paste-ready opening prompt for a brand-new session, of the form:
-   `start with this: <handoff doc path>` plus one sentence naming the immediate next action from the doc.
-3. **Model note** - name the exact model powering this session, so the successor is started on the same one rather than a default.
+## 2. Start the successor
 
-If the machine has a local session-spawn script (e.g. `~/.claude/scripts/spawn-desktop-session.sh`), offer - once, plain yes/no - to launch the successor directly with it, passing the handoff path, this session's model id, and this session's id. Do not spawn anything without a yes. If no such script exists, the two commands above are the deliverable; do not invent a spawn mechanism.
+**Claude Desktop** - if `mcp__ccd_session__start_session` exists (load via ToolSearch if deferred):
+
+- `context: "fresh"` (default): `prompt` = goal, files/area, done criteria, next step; `background` (required, 80+ chars) = live state, decisions, gotchas, boundaries. Use `context: "fork"` only when the conversation is short and the full transcript is worth carrying.
+- User asked to start it (typed /handoff to continue, "start a new session"): `initiation: "user_asked"`, no extra yes/no.
+- Skill fired on your own judgment (context filling up): `initiation: "offer"` with only a `title`, alone in its message; if they pick New session, send `prompt` + `background` with the returned `proposal_id`.
+- `use_worktree: true` if it may edit files this session also touches.
+- Bold title line plus one sentence right before the call; afterwards link it as `[title](#local_<id>)` with the id from the result.
+
+Use `mcp__ccd_session__hand_off_to_session` only when the user sends an unrelated request mid-task and the current task must move out.
+
+**Anywhere else** - ask once, plain yes/no, then give a "Start the next session" block, run from the repo or worktree the work lives in:
+
+1. Fresh (default): `claude --model <this session's model id> "<next action>. Brief: <brief path>"`
+2. Full context instead: `claude --resume <this session id> --fork-session --model <model id>` (same directory as this session; session id from the SessionStart hook if printed, otherwise say it is unknown).
+
+The brief path must be readable from the successor's directory; if not, paste the brief inline instead.
