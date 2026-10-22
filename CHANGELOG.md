@@ -2,6 +2,9 @@
 
 All notable changes to claude-conductor. Newest first.
 
+## [0.9.3] - 2026-10-22
+- handoff: in Claude Desktop the successor starts through `start_session` with the brief split into `prompt` (task, done criteria, next step) and `background` (live state, decisions, gotchas), `user_asked` when the user asked and `offer` when the skill fired on its own judgment. `hand_off_to_session` is kept for moving a task out mid-turn only. A request for just the brief stops after saving it. Outside Desktop the fallback is a runnable `claude --model <id> "..."` fresh start; the personal spawn-script reference is gone.
+
 ## [0.9.2] - 2026-09-30
 - conductor-doctor: `plugin-cache-stale` compares the local clone against the user-scope install in `~/.claude/plugins/installed_plugins.json` instead of the cache dir with the newest mtime. Claude Code writes `.orphaned_at` into version dirs no install references, which bumps their mtime past the live one, so after consolidating installs on 0.9.1 every session start reported a 0.7.3 cache. An unreadable or reshaped `installed_plugins.json` skips the check instead of opening an entry with no subject.
 
