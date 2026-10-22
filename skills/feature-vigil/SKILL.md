@@ -20,14 +20,14 @@ Ask/derive from the change:
   the change touches (build the list FROM THE DIFF or the feature spec).
 - **Watch length**: N days (default 7).
 - **Alert channel**: where the operator wants pings (chat, pager, push).
-- **State dir** (survives sessions, NOT committed): `state.json` (feature,
+- **State dir** (`.vigil/<feature>/`, same convention as infra-vigil; survives sessions, NOT committed - gitignore it): `state.json` (feature,
   startedAt, endsAt, status, surfaces, alertChannel, lastSweepAt, sweepsRun,
   findings[]), `baseline.json`, `log.md` (append-only).
 
 ## Baseline (day 0)
 
-Capture per surface, with the exact query used (log-store builder queries -
-never the aggregate_* MCP tools, they ignore filters):
+Capture per surface, with the exact query used (use filtered builder
+queries):
 1. **Error signatures**: top-20 error bodies mentioning the feature's
    operations/files, daily counts for the prior 7 days.
 2. **Throughput counters**: requests/executions per day for each operation -
@@ -43,11 +43,9 @@ never the aggregate_* MCP tools, they ignore filters):
 
 ## Sweeps (scheduled, every 1-6h for N days)
 
-Durable layer first: a scheduled check (cloud routine if the runner has
-creds, else local cron - give the cron an explicit PATH and verify the alert
-sender's success response; both are known day-one failure modes). In-session
-loops are only a supplement; on any session touching the feature, re-arm a
-dead watcher and log the gap.
+Scheduling follows infra-vigil (scheduled task as the durable layer, Monitor
+for in-session waits, verify alert delivery). On any session touching the
+feature, re-arm a dead watcher and log the gap.
 
 Each sweep compares against the baseline hour/day-of-week where volumes are
 cyclical:

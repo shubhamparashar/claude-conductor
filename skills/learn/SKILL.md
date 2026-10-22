@@ -5,7 +5,7 @@ description: Distill a reusable skill RIGHT NOW from what this session just did 
 
 # Learn
 
-The nightly harvest (`examples/skill-harvest/`) finds procedures by re-reading yesterday's transcripts. This does it in-session, where the context is still live and free: you already know which step was the gotcha and which was noise. Same output lane, same review gate.
+The nightly harvest (an optional job; setup in `examples/skill-harvest/`, not installed by default) finds procedures by re-reading yesterday's transcripts. This does it in-session, where the context is still live and free: you already know which step was the gotcha and which was noise. Same output lane, same review gate.
 
 ## What to distill
 
@@ -19,7 +19,7 @@ Sources, in order of preference:
 
 ## Before writing: overlap check
 
-Grep `~/.claude/skills/`, the project's `.claude/skills/` and `.claude/commands/`, and the plugin skills for the concept. Existing skill covers 80% of it? **Patch that skill instead**: write the proposed change to `~/.claude/skills-drafts/patches/<skill-name>-<date>.md` (What failed / Root cause / Proposed patch, the same shape the harvest uses). Duplicated skills are the main way a skills dir rots.
+Grep `~/.claude/skills/`, the project's `.claude/skills/` and `.claude/commands/`, and the plugin skills for the concept. Existing skill covers 80% of it? **Patch that skill instead**: write the proposed change to `~/.claude/skills-drafts/patches/<skill-name>-<date>.md` as three headed sections: `## What failed` (the observed failure or gap, quoted), `## Root cause` (why the skill allowed it), `## Proposed patch` (a concrete diff against the live `SKILL.md`). Duplicated skills are the main way a skills dir rots.
 
 ## Write it
 

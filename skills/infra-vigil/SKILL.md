@@ -13,14 +13,14 @@ revert, never commits/pushes, never modifies infra. Safe for anyone to run.
 ## When this fires
 1. **Go-live of any infra change**: traffic cutover/canary, compute migration,
    resize, new service/queue/cron, proxy-topology change, DB/pool changes.
-2. **Session start on a task with an active vigil**: check `.vigil/` (or the
-   operator's configured state dir) for an active watch touching the current
-   task. If `state.json` says active but the watcher is dead (session died,
-   machine slept), RE-ARM it and tell the user in one line.
+2. **Session start, only if a `state.json` exists** in the state dir (see
+   State) for a watch touching the current task. If it says active but the
+   watcher is dead (session died, machine slept), RE-ARM it and tell the user
+   in one line. No `state.json`, no trigger.
 
 ## State (survives sessions)
-Per watch, in a state dir the operator picks (NOT committed to the repo -
-gitignore it if placed in-repo): `state.json` (name, startedAt, endsAt =
+Per watch, in `.vigil/<name>/` (same convention as feature-vigil; NOT
+committed to the repo - gitignore it): `state.json` (name, startedAt, endsAt =
 start+7d, status, target identifiers, alert channel, lastCheckAt, checksRun,
 anomalies[]), `baseline.json`, `log.md` (append-only: every check, anomaly,
 re-arm, and gap). A vigil ends only when: anomaly confirmed (keep watching
@@ -57,9 +57,8 @@ the go-live (report it - do not fix infra yourself):
 Save to `baseline.json`, each with the exact query used:
 - CloudWatch: ELB/Target 5xx per hour (prior 24h), p50/p99 response time,
   CPU+mem avg/max, task/instance count.
-- Log/trace store (SigNoz here): ERROR count/hour, top-20 error body
-  signatures with daily counts (builder queries - the aggregate_* MCP tools
-  ignore filters), key business-op throughput.
+- Your log store: ERROR count/hour, top-20 error body signatures with daily
+  counts (filtered builder queries), key business-op throughput.
 - Infra facts: task-def revision / version, listener weights, alarm list +
   states, role policy list.
 - Alert-channel norms: P0 alerts/day in the paging channel for the prior week.
@@ -67,13 +66,11 @@ Save to `baseline.json`, each with the exact query used:
 ## Phase 3 - the watch (24/7 for 7 days)
 Layered, most durable first:
 1. **CloudWatch alarms -> SNS** (always; survives everything).
-2. **Scheduled recurring check** - cloud routine if the runner has creds
-   there, else a local cron running a small check script. The script needs an
-   explicit PATH (cron's default PATH misses brew/aws) and must VERIFY its
-   alert delivery (parse the sender's success response - a connect is not a
-   send). Both were real bugs on day one of the first vigil.
-3. **In-session watcher** (loop/wakeups) while a session is open - dies with
-   the machine, hence the re-arm rule.
+2. **Scheduled recurring check** - a scheduled task (the `schedule` skill or
+   the scheduled-tasks tool). The check must VERIFY its alert delivery (parse
+   the sender's success response - a connect is not a send).
+3. **In-session waits** use Monitor (or a background task), not sleep loops;
+   they die with the session, hence the re-arm rule.
 
 Each check (one log.md line): last-hour 5xx, CPU max, running vs desired,
 task stops with exit!=0 (ECS stopped-task data expires in ~1h - check EVERY

@@ -1,6 +1,6 @@
 ---
 name: hot-cold-review
-description: Review a PR or diff with two independent agents at once — a "hot" reviewer primed with full context (the ERD/spec, related merged PRs, this session's state, known collisions) and a "cold" reviewer with fresh eyes (only the diff, the repo, and the spec — no priming). Findings that BOTH raise are high-confidence; a collision/spec-gap only one catches still surfaces. Use when the user says "hot cold", "hot/cold review", "review it my way", "dual review this PR", or wants two independent perspectives on a change before merge.
+description: Review a PR or diff with two independent agents at once — a "hot" reviewer primed with full context (the ERD/spec, related merged PRs, this session's state, known collisions) and a "cold" reviewer with fresh eyes (only the diff, the repo, and the spec — no priming). Findings that BOTH raise are high-confidence; a collision/spec-gap only one catches still surfaces. Use when the user says "hot cold", "hot/cold review", "dual review this PR", or wants two independent perspectives on a change before merge.
 ---
 
 # /hot-cold-review — two independent reviewers, one PR

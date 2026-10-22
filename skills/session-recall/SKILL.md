@@ -10,8 +10,8 @@ Past sessions are episodic memory sitting on disk (`~/.claude/projects/*/*.jsonl
 ## Usage
 
 ```bash
-python3 <skill-dir>/search.py search "zone pricing loader dryRun" --k 8
-python3 <skill-dir>/search.py search "ERR_MODULE_NOT_FOUND" --project my-api
+python3 <skill-dir>/search.py search "migration dry run" --k 8
+python3 <skill-dir>/search.py search "ERR_MODULE_NOT_FOUND" --project my-service
 ```
 
 - Auto-indexes incrementally before every search (only new/changed transcripts; first run over a few hundred sessions takes ~30s, then it's instant).

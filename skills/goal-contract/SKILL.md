@@ -13,7 +13,7 @@ Any task with more than one deliverable, a merge/deploy boundary, or a history o
 
 ## Write the contract (before work starts)
 
-Create `~/.claude/goal-contracts/<slug>.md` (slug = short kebab-case task name; include the session id in frontmatter so the gate hook can match it):
+Create `~/.claude/goal-contracts/<slug>.md` (slug = short kebab-case task name; include the session id in frontmatter so the gate hook can match it; the SessionStart hook prints it as `session-id: <id>` at the top of the session):
 
 ```markdown
 ---

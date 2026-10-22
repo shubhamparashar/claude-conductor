@@ -22,5 +22,5 @@ python3 <skill-dir>/costs.py --days 7 --by day --project my-api
 ## When to reach for it
 
 - Before/after changing delegation tiers — did routing legwork to haiku actually move the number?
-- Answering "are the LaunchAgent jobs worth moving off the main model?"
+- Answering "are the scheduled/headless jobs worth moving off the main model?"
 - Monthly sanity check that the frontier model is spending tokens on synthesis, not legwork.

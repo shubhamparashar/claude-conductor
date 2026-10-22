@@ -34,6 +34,6 @@ Use `mcp__ccd_session__hand_off_to_session` only when the user sends an unrelate
 **Anywhere else** - ask once, plain yes/no, then give a "Start the next session" block, run from the repo or worktree the work lives in:
 
 1. Fresh (default): `claude --model <this session's model id> "<next action>. Brief: <brief path>"`
-2. Full context instead: `claude --resume <this session id> --fork-session --model <model id>` (same directory as this session; session id from the SessionStart hook if printed, otherwise say it is unknown).
+2. Full context instead: `claude --resume <this session id> --fork-session --model <model id>` (same directory as this session; session id from the `session-id: <id>` line the SessionStart hook prints, otherwise say it is unknown).
 
 The brief path must be readable from the successor's directory; if not, paste the brief inline instead.
