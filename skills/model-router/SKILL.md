@@ -42,7 +42,7 @@ Location: `~/.claude/routing-journal.md` (create on first use). Format — one m
    - A tier with consistent `clean` history → use it (prefer the exact journaled model when your harness offers it).
    - `FAILED`/`degraded` at a tier → start one tier higher.
    - No history → tier default: SMALL for search/fetch/mechanical, MID for verify/scope/routine code, LARGE for hard self-contained work.
-3. Never delegate regardless of journal: final cross-agent synthesis, strategy/architecture decisions, anything needing the full conversation context. These stay in the main loop — the journal's own seed data shows why.
+3. Never delegate regardless of journal: final cross-agent synthesis, strategy/architecture decisions, anything needing the full conversation context. These stay in the main loop.
 4. Keep subagent prompts narrow and self-contained; the orchestrator keeps the strategy.
 5. On junk/thin output: retry once at the next tier up, then pull into the main loop. Journal both attempts.
 

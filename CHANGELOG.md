@@ -2,6 +2,17 @@
 
 All notable changes to claude-conductor. Newest first.
 
+## [0.9.4] - 2026-10-22
+- New SessionStart hook `session-id-print` prints `session-id: <id>`; goal-contract and handoff now point at it (no hook printed the id before).
+- deploy-sentinel: baseline query polls `get-query-results` until Complete instead of `sleep 8`; sweeps run under Monitor/background tasks; region and log group come from the repo/diff; the stack-specific FATAL regex is a labelled example; baseline must precede the merge (or use the 30 minutes before deploy); IAM gotcha reworded to diff the clone role's policies against the original.
+- infra-vigil: scheduling via scheduled tasks and Monitor, cron PATH lore dropped, "your log store" instead of SigNoz, session-start trigger only when `state.json` exists, state dir `.vigil/<name>/`. feature-vigil: same state-dir convention, filtered builder queries, scheduling defers to infra-vigil.
+- metrics-share: payload example uses `claude-sonnet-5-5` / `claude-haiku-5-5` and the journal outcome vocabulary (clean/degraded/FAILED). model-router: dropped the dangling seed-data claim.
+- cost-stats: removed the personal path comment; "scheduled/headless jobs" wording.
+- knowledge-sync `sync.sh init` refuses (exit 1) when `~/.claude/.git` or `~/.claude/.gitignore` exists instead of overwriting.
+- conductor-doctor: `plugin-cache-stale` is skipped when `CONDUCTOR_REPO_DIR` is unset (no hardcoded personal fallback).
+- persist-everywhere and hot-cold-review: neutral trigger phrases. facts-recall and session-recall: generic example queries.
+- learn: defines the patch shape inline and states the harvest job is optional.
+
 ## [0.9.3] - 2026-10-22
 - handoff: in Claude Desktop the successor starts through `start_session` with the brief split into `prompt` (task, done criteria, next step) and `background` (live state, decisions, gotchas), `user_asked` when the user asked and `offer` when the skill fired on its own judgment. `hand_off_to_session` is kept for moving a task out mid-turn only. A request for just the brief stops after saving it. Outside Desktop the fallback is a runnable `claude --model <id> "..."` fresh start; the personal spawn-script reference is gone.
 

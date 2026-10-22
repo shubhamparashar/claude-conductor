@@ -17,8 +17,6 @@ from pathlib import Path
 
 PROJECTS = Path.home() / '.claude' / 'projects'
 # $ per MTok: (input, output, cache_read, cache_write_5m)
-# Keep in sync with DEFAULT_PRICING in ~/repo/cc-orchestrator/lib/pricing.mjs - both
-# tables hardcode the same public API rates and drift silently if only one is updated.
 PRICES = {
     'haiku': (1.00, 5.00, 0.10, 1.25),
     'sonnet': (3.00, 15.00, 0.30, 3.75),

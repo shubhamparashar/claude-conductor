@@ -24,7 +24,11 @@ g() { git -C "$KDIR" "$@"; }
 case "${1:-}" in
 init)
     [ -n "${2:-}" ] || { echo "usage: sync.sh init <remote-url>"; exit 1; }
-    [ -d "$KDIR/.git" ] || g init -b main
+    if [ -e "$KDIR/.git" ] || [ -e "$KDIR/.gitignore" ]; then
+        echo "refusing to init: $KDIR/.git or $KDIR/.gitignore already exists and init would overwrite the .gitignore. Merge by hand or remove them first." >&2
+        exit 1
+    fi
+    g init -b main
     g remote get-url origin >/dev/null 2>&1 || g remote add origin "$2"
     # knowledge surfaces only — everything else in ~/.claude stays out
     printf '%s\n' '*' '!.gitignore' '!rules' '!rules/**' '!CLAUDE.md' \

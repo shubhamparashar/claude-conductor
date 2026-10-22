@@ -15,17 +15,29 @@ the team to run on any deploy.
 
 ## 1. Baseline BEFORE the deploy lands
 
-Capture the pre-deploy error floor so post-deploy numbers mean something:
+Capture the pre-deploy error floor so post-deploy numbers mean something. It
+must be captured before the merge; if invoked after, use the 30 minutes before
+the deploy time. Take the region and log group from the repo/diff (SST/CDK
+stack, task definition), not from memory:
 
 ```bash
 LG="/aws/lambda/<function-log-group>"   # or /ecs/<cluster> for Fargate surfaces
-# fatal classes only - broad /error/i regex is noise on high-traffic surfaces
-FATAL='ERR_MODULE_NOT_FOUND|Runtime.ImportModuleError|Runtime.UserCodeSyntaxError|Unhandled Promise|Task timed out|Process exited before completing|Cannot find module|Please make sure it is bound|Failed to enqueue'
-QID=$(aws logs start-query --region us-east-1 --log-group-name "$LG" \
+REGION="<region from the stack config>"
+FATAL='<fatal classes for this stack>'   # see the example below
+QID=$(aws logs start-query --region "$REGION" --log-group-name "$LG" \
   --start-time $(($(date +%s)-1800)) --end-time $(date +%s) \
   --query-string "filter @message like /$FATAL/ | stats count() as fatal" \
-  --query queryId --output text); sleep 8
-aws logs get-query-results --region us-east-1 --query-id "$QID"
+  --query queryId --output text)
+until [ "$(aws logs get-query-results --region "$REGION" --query-id "$QID" \
+  --query status --output text)" = Complete ]; do sleep 2; done
+aws logs get-query-results --region "$REGION" --query-id "$QID"
+```
+
+Use fatal classes only - a broad `/error/i` regex is noise on high-traffic
+surfaces. Example (Node Lambda on SST), adapt to your stack:
+
+```
+FATAL='ERR_MODULE_NOT_FOUND|Runtime.ImportModuleError|Runtime.UserCodeSyntaxError|Unhandled Promise|Task timed out|Process exited before completing|Cannot find module|Please make sure it is bound|Failed to enqueue'
 ```
 
 Also record: invoke rate (`filter @type="REPORT" | stats count()`), and for
@@ -44,7 +56,7 @@ canary/route work the current API GW integration
 
 ## 3. Monitoring sweeps (T+0, ~T+20m, ~T+60m)
 
-Background sweeps (`sleep N; <query>` via run_in_background):
+Run sweeps as a Monitor or background task that waits for the sweep time and then runs the query (never a foreground `sleep N; <query>`):
 
 - Fatal-class count vs baseline (post-deploy window only).
 - Invoke count same window (crash-loop = fatals + invoke spike; dead route =
@@ -114,9 +126,10 @@ other than the human operator.
 
 ## Gotchas (all learned in prod here)
 
-- Clone compute (canary Lambda, Fargate task) must have `*` IAM parity with
-  the original - enumerated policies fail one grant at a time under live
-  traffic, and an uncaught AccessDenied can crash the process.
+- Clone compute (canary Lambda, Fargate task): diff the clone role's policies
+  against the original before shifting traffic - a missing grant fails one
+  call at a time under live traffic, and an uncaught AccessDenied can crash
+  the process.
 - `get-function-configuration` OMITS reserved concurrency - use
   `get-function-concurrency`.
 - ECS stopped-task detail expires in ~1h - capture exit codes every sweep;

@@ -5,7 +5,7 @@ description: Aggregate the local delegation routing journal into an ANONYMIZED w
 
 # Metrics Share (anonymous, consent-gated, weekly)
 
-Purpose: collect delegation outcomes from different setups so tier defaults (e.g. Sonnet 5 vs Sonnet 5.5 vs Haiku per task-kind) are chosen from internal data, not vibes. **No task content, no paths, no project names ever leave the machine.**
+Purpose: collect delegation outcomes from different setups so tier defaults (e.g. Sonnet 5.5 vs Haiku 5.5 per task-kind) are chosen from internal data, not vibes. **No task content, no paths, no project names ever leave the machine.**
 
 ## What gets shared (and nothing else)
 
@@ -17,11 +17,13 @@ One JSON payload per week, aggregated from `~/.claude/routing-journal.md` + `~/.
   "week": "2026-W29",
   "platform": "darwin",
   "rows": [
-    { "kind": "kb-lookup", "model": "claude-sonnet-5", "n": 4, "in_tok": 310000, "out_tok": 9800, "outcome": "ok" },
-    { "kind": "code-review", "model": "claude-haiku-4-5", "n": 2, "in_tok": 120000, "out_tok": 4100, "outcome": "failed" }
+    { "kind": "kb-lookup", "model": "claude-sonnet-5-5", "n": 4, "in_tok": 310000, "out_tok": 9800, "outcome": "clean" },
+    { "kind": "code-review", "model": "claude-haiku-5-5", "n": 2, "in_tok": 120000, "out_tok": 4100, "outcome": "FAILED" }
   ]
 }
 ```
+
+`outcome` uses the routing journal vocabulary: `clean`, `degraded`, `FAILED`.
 
 ## Steps
 

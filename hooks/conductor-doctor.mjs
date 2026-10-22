@@ -340,7 +340,8 @@ check('claudemd-dup-skill', () => {
 // version is live - Claude Code writes .orphaned_at into dropped version dirs.
 let cacheStale = '';
 check('plugin-cache-stale', () => {
-    const repo = process.env.CONDUCTOR_REPO_DIR || '/Users/shubhamparashar/repo/claude-conductor';
+    const repo = process.env.CONDUCTOR_REPO_DIR;
+    if (!repo) return true;
     const manifest = join(repo, '.claude-plugin', 'plugin.json');
     if (!existsSync(manifest)) return true;
     const { name, version } = JSON.parse(readFileSync(manifest, 'utf8'));

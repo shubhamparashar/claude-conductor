@@ -1,6 +1,6 @@
 ---
 name: persist-everywhere
-description: Broadcast a fact, rule, or preference to ALL of the user's knowledge surfaces at once — their knowledge base, auto-memory, global ~/.claude/CLAUDE.md, and (when project-relevant) project CLAUDE.md files. Use when the user says "add this to the brain", "add to memory", "add to claude.md", "add to all the claude mds", "persist this everywhere", or "save this in all places".
+description: Broadcast a fact, rule, or preference to ALL of the user's knowledge surfaces at once — their knowledge base, auto-memory, global ~/.claude/CLAUDE.md, and (when project-relevant) project CLAUDE.md files. Use when the user says "save this everywhere", "add to memory and CLAUDE.md", "persist this everywhere", or "save this in all places".
 ---
 
 # Persist Everywhere

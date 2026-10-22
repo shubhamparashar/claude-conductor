@@ -10,8 +10,8 @@ Session-recall searches episodic memory (raw transcripts). This searches the sem
 ## Usage
 
 ```bash
-python3 <skill-dir>/facts.py search "zone pricing currency" --k 8
-CONDUCTOR_KNOWLEDGE_DIRS=~/repo/context/okf python3 <skill-dir>/facts.py search "rollout state"
+python3 <skill-dir>/facts.py search "payment retry policy" --k 8
+CONDUCTOR_KNOWLEDGE_DIRS=~/repo/context/okf python3 <skill-dir>/facts.py search "release checklist"
 ```
 
 - Indexed by default: `~/.claude/rules/` and every `~/.claude/projects/*/memory/`.
